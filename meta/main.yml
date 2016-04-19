@@ -1,6 +1,6 @@
 galaxy_info:
   author: Kyungwook Park
-  description: 
+  description: Install Python 2.7
   license: BSD
   min_ansible_version: 2.0
 
