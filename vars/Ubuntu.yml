@@ -1,0 +1,16 @@
+package_build_essential:
+  - build-essential
+
+package_python_development:
+  - python
+  - python-dev
+
+package_python_extras:
+  - libz-dev
+  - libreadline-dev
+  - libncursesw5-dev
+  - libssl-dev
+  - libgdbm-dev
+  - libsqlite3-dev
+  - libc6-dev
+  - libbz2-dev

@@ -1,0 +1,30 @@
+---
+- apt: update_cache=yes
+  become: yes
+
+- include_vars: "{{ ansible_distribution }}.yml"
+
+- include_vars: "{{ ansible_distribution }}{{ansible_distribution_major_version}}.yml"
+  when: ansible_distribution_major_version == "16"
+
+- include: "{{ ansible_distribution }}{{ansible_distribution_major_version}}.yml"
+  when: ansible_distribution_major_version == "16"
+
+#sudo add-apt-repository ppa:fkrull/deadsnakes-python2.7
+#sudo apt-get update
+#sudo apt-get install python2.7
+
+- name : Install Development Tools
+  package : name={{ item }} state=latest
+  with_items: '{{ package_build_essential }}'
+  become: yes
+
+- name : Install Extra Libraries
+  package : name={{ item }} state=latest
+  with_items: '{{ package_python_extras }}'
+  become: yes
+
+- name : Install Python v2.7
+  package : name={{ item }} state=latest
+  with_items: '{{ package_python_development }}'
+  become: yes

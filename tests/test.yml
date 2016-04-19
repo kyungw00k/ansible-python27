@@ -1,0 +1,5 @@
+---
+- hosts: 10.0.0.101
+  remote_user: vagrant
+  roles:
+    - python27

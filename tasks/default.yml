@@ -1,0 +1,57 @@
+---
+# default.yml
+
+## Install Python 2.7
+
+- set_fact: python_should_be_installed=false
+
+- command: "{{python_configure_prefix}}/bin/{{ python }} --version"
+  ignore_errors: true
+  always_run: true
+  changed_when: false
+  register: py_version
+
+- set_fact: python_should_be_installed=true
+  when: py_version.rc != 0 or py_version.stderr.find('{{python_source_version}}') == -1
+
+- name: "Download Python v{{python_source_version}}"
+  get_url: url=https://www.python.org/ftp/python/{{python_source_version}}/Python-{{python_source_version}}.tgz dest={{download_dest}}
+  when: python_should_be_installed
+
+- name: Unarchive Python Source
+  command: chdir={{download_dest}} tar zxvf {{download_dest}}/Python-{{python_source_version}}.tgz
+  when: python_should_be_installed
+
+- name: "Install Python v{{python_source_version}}"
+  command: chdir={{download_dest}}/Python-{{python_source_version}} {{ item }}
+  with_items:
+    - ./configure --prefix={{python_configure_prefix}} {{python_configure_enable_unicode}} {{python_configure_enable_shared}} {{python_configure_ldflags}}
+    - /usr/bin/make
+    - /usr/bin/make altinstall
+    - ln -s {{python_configure_prefix}}/bin/{{ python }} {{python_configure_prefix}}/bin/python
+  when: python_should_be_installed
+  become: true
+  tags: python
+
+- name: Delete Python Archive
+  file: state=absent path={{ download_dest }}/Python-{{python_source_version}}.tgz
+  when: python_should_be_installed
+  tags: python
+
+- name: "Add {{python_configure_prefix}}/lib to /etc/ld.so.conf.d/"
+  template: src=etc/ld.so.conf.d/python.conf.j2 dest=/etc/ld.so.conf.d/python.conf
+  become: yes
+  when: python_should_be_installed
+  tags: python
+
+- name: Update Library Cache
+  command: ldconfig
+  tags: python
+  when: python_should_be_installed
+  become: true
+
+- name: "Add {{python_configure_prefix}}/bin to /etc/profile.d/"
+  template: src=etc/profile.d/python.sh.j2 dest=/etc/profile.d/python.sh
+  become: yes
+  when: python_should_be_installed
+  tags: python

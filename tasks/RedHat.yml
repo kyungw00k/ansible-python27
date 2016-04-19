@@ -1,0 +1,38 @@
+---
+- include_vars: "EL.yml"
+
+- include_vars: "EL{{ansible_distribution_major_version}}.yml"
+  when: ansible_distribution_major_version == '7'
+
+- name: Install IUS (CentOS) repo.
+  package: name={{item}}
+  with_items:
+    - https://centos{{ ansible_distribution_major_version }}.iuscommunity.org/ius-release.rpm
+  when: ansible_distribution == "CentOS"
+  become: yes
+
+- name: Install IUS (RHEL) repo.
+  package: name={{item}}
+  with_items:
+    - https://rhel{{ ansible_distribution_major_version }}.iuscommunity.org/ius-release.rpm
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+  become: yes
+
+- name: Import IUS Community Project GPG key
+  rpm_key: key=http://dl.iuscommunity.org/pub/ius/IUS-COMMUNITY-GPG-KEY state=present
+  become: yes
+
+- name : Install Development Tools
+  package : name={{ item }} state=latest
+  with_items: '{{ package_build_essential }}'
+  become: yes
+
+- name : Install Extra Libraries
+  package : name={{ item }} state=latest
+  with_items: '{{ package_python_extras }}'
+  become: yes
+
+- name : Install Python v2.7
+  package : name={{ item }} state=latest
+  with_items: '{{ package_python_development }}'
+  become: yes

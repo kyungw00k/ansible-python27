@@ -1,0 +1,20 @@
+---
+# defaults file for ansible-python27
+
+download_dest: /tmp
+
+python_target_version: 2.7
+python_configure_prefix: /usr/local
+python_configure_enable_shared: "--enable-shared"
+python_configure_ldflags: "LDFLAGS=\"-Wl,-rpath {{ python_configure_prefix }}/lib\""
+
+# for 2.7 : --enable-unicode=ucs4
+# for 3.2 : --with-wide-unicode
+python_configure_enable_unicode:
+python_source_version: "{{python_target_version}}.11"
+
+python: python{{python_target_version}}
+easy_install: easy_install-{{python_target_version}}
+pip: pip{{python_target_version}}
+pip_version: "LATEST"
+

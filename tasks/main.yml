@@ -1,0 +1,46 @@
+---
+- include: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "default.yml"
+
+- name: "Check to see if {{ python }} is installed"
+  command: "{{ python }} --version"
+  ignore_errors: true
+  always_run: true
+  changed_when: false
+  register: python_is_installed
+
+- fail: msg="{{ python }} should be installed"
+  when: python_is_installed.rc != 0
+
+## Install setuptools
+
+- name: Download the setup script for Setuptools
+  get_url: url=https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py dest={{download_dest}}
+  tags: pip
+
+- name: Install Setuptools
+  command: chdir={{download_dest}} sudo env "PATH=$PATH" {{ python }} ez_setup.py
+  tags: pip
+
+- name: Delete the setup script for Setuptools
+  file: state=absent path={{ download_dest }}/ez_setup.py
+  tags: pip
+
+## Install pip
+
+- name: Install pip using Setuptools
+  command: sudo env "PATH=$PATH" {{ easy_install }} pip
+  register: pip_latest_output
+  changed_when: pip_latest_output.stdout.find('Requirement already up-to-date') == -1
+  when: pip_version == None or pip_version == "LATEST"
+  tags: pip
+
+- name: Upgrade to latest version of pip
+  command: sudo env "PATH=$PATH" {{ pip }} install -U pip
+  register: pip_latest_output
+  changed_when: pip_latest_output.stdout.find('Requirement already up-to-date') == -1
+  when: pip_version == None or pip_version == "LATEST"
+  tags: pip

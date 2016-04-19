@@ -1,0 +1,23 @@
+---
+package_build_essential:
+   - "@development"
+    - gcc
+    - gcc-c++
+    - libselinux-python
+
+package_python_development:
+  - python27
+  - python27-devel
+
+package_python_extras:
+  - zlib-devel
+  - bzip2-devel
+  - openssl-devel
+  - ncurses-devel
+  - sqlite-devel
+  - readline-devel
+  - libffi
+  - libffi-devel
+  - gdbm-devel
+  - libpcap-devel
+  - xz-devel
