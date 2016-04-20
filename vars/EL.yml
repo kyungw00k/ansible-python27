@@ -1,9 +1,9 @@
 ---
 package_build_essential:
-   - "@development"
-    - gcc
-    - gcc-c++
-    - libselinux-python
+  - "@development"
+  - gcc
+  - gcc-c++
+  - libselinux-python
 
 package_python_development:
   - python27
