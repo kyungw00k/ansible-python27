@@ -18,7 +18,7 @@
 ## Install setuptools
 
 - name: Download the setup script for Setuptools
-  get_url: url=https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py dest={{download_dest}}
+  get_url: url=https://bootstrap.pypa.io/ez_setup.py dest={{download_dest}}
   tags: pip
 
 - name: Install Setuptools
